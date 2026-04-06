@@ -7,7 +7,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Professional Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&family=Anek+Malayalam:wght@700&display=swap" rel="stylesheet">
     <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     
@@ -26,6 +26,7 @@
                     fontFamily: {
                         serif: ['Playfair Display', 'serif'],
                         sans: ['Inter', 'sans-serif'],
+                        malayalam: ['Anek Malayalam', 'sans-serif']
                     }
                 }
             }
@@ -202,6 +203,7 @@
         <p class="font-medium">Darul Irfan Islamic Academy Pandikkad</p>
     </footer>
 
+    <!-- Using the provided poster template -->
     <img id="poster-template" src="poster.jpg" alt="template" class="hidden" crossorigin="anonymous">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -276,7 +278,7 @@
             });
         }
 
-        // Generation
+        // Updated Drawing logic based on specific requirements
         DOM.applyBtn.onclick = async () => {
             updateStep(3);
             DOM.loader.classList.remove('hidden');
@@ -295,11 +297,12 @@
             // 1. Draw Template
             ctx.drawImage(DOM.template, 0, 0);
 
-            // 2. Draw Portrait (Rounded)
+            // 2. Draw Portrait (Clipped Circle)
+            // Position: Horizontal center (0.5), Slightly above vertical center (0.36)
             ctx.save();
             const centerX = canvas.width * 0.5;
             const centerY = canvas.height * 0.36;
-            const radius  = canvas.width * 0.20;
+            const radius = canvas.width * 0.20;
             
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -309,13 +312,30 @@
             ctx.restore();
 
             // 3. Draw Student Name
+            // Ensure font is loaded
+            await document.fonts.load("bold 40px 'Anek Malayalam'");
+            
             const name = DOM.nameInput.value.trim().toUpperCase();
             if (name) {
-                ctx.fillStyle = '#0F3D2E';
-                ctx.font = 'bold 36px Inter, sans-serif';
-                ctx.textAlign = 'left';
-                // Adjusting position slightly for better fit in the text area
-                ctx.fillText(name, canvas.width * 0.1, canvas.height * 0.58);
+                const textX = canvas.width * 0.5;
+                const textY = canvas.height * 0.53;
+                const fontSize = canvas.width * 0.045;
+                const maxWidth = canvas.width * 0.6;
+
+                ctx.save();
+                // Font & Style
+                ctx.fillStyle = '#000000'; // Black text color as per typical name fields
+                ctx.font = `bold ${fontSize}px 'Anek Malayalam'`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Subtle shadow
+                ctx.shadowColor = 'rgba(0,0,0,0.25)';
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetY = 2;
+
+                ctx.fillText(name, textX, textY, maxWidth);
+                ctx.restore();
             }
 
             state.canvas = canvas;
