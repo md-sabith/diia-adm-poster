@@ -102,7 +102,7 @@
         <div class="flex items-center justify-center mb-12 space-x-4 md:space-x-8">
             <div id="nav-1" class="flex items-center space-x-2 text-academy-dark font-semibold">
                 <span class="w-8 h-8 rounded-full bg-academy-dark text-white flex items-center justify-center text-xs">1</span>
-                <span class="hidden md:inline">Upload</span>
+                <span class="hidden md:inline">Identity</span>
             </div>
             <div class="h-px w-8 bg-gray-300"></div>
             <div id="nav-2" class="flex items-center space-x-2 text-gray-400 font-medium step-inactive">
@@ -119,14 +119,20 @@
         <!-- Main Workspace -->
         <div class="academy-card rounded-xl p-8 md:p-12">
             
-            <!-- STEP 1: UPLOAD -->
+            <!-- STEP 1: IDENTITY & UPLOAD -->
             <div id="step-1" class="space-y-8">
                 <div class="text-center">
-                    <h2 class="text-2xl font-serif text-academy-dark mb-2">Create Your Poster</h2>
-                    <p class="text-gray-500 text-sm">Please upload a clear portrait photo for your admission poster.</p>
+                    <h2 class="text-2xl font-serif text-academy-dark mb-2">Student Information</h2>
+                    <p class="text-gray-500 text-sm">Enter the student's name and upload a portrait photo.</p>
                 </div>
 
                 <div class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-academy-dark uppercase tracking-wider mb-2">Student Name</label>
+                        <input type="text" id="student-name" placeholder="Enter student's full name" 
+                               class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-academy-gold focus:ring-1 focus:ring-academy-gold outline-none transition-all">
+                    </div>
+
                     <div id="drop-zone" class="upload-dashed rounded-xl p-12 text-center cursor-pointer group">
                         <input type="file" id="file-input" class="hidden" accept="image/*">
                         <div class="space-y-4">
@@ -178,7 +184,7 @@
                         <!-- Canvas Appears Here -->
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <button id="btn-restart" class="w-full py-4 px-6 border border-gray-200 text-gray-600 rounded-lg font-semibold text-sm hover:bg-gray-50 transition-all">Create New</button>
                         <button id="btn-download" class="w-full py-4 px-6 bg-academy-dark text-white rounded-lg font-semibold text-sm hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -212,6 +218,7 @@
             steps: [1,2,3].map(i => document.getElementById(`step-${i}`)),
             navs: [1,2,3].map(i => document.getElementById(`nav-${i}`)),
             fileInput: document.getElementById('file-input'),
+            nameInput: document.getElementById('student-name'),
             dropZone: document.getElementById('drop-zone'),
             imgToCrop: document.getElementById('image-to-crop'),
             template: document.getElementById('poster-template'),
@@ -290,9 +297,9 @@
 
             // 2. Draw Portrait (Rounded)
             ctx.save();
-            const centerX = canvas.width * 0.655;
-            const centerY = canvas.height * 0.685;
-            const radius = canvas.width * 0.222;
+            const centerX = canvas.width * 0.5;
+            const centerY = canvas.height * 0.36;
+            const radius  = canvas.width * 0.20;
             
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -300,6 +307,16 @@
             ctx.clip();
             ctx.drawImage(cropped, centerX - radius, centerY - radius, radius * 2, radius * 2);
             ctx.restore();
+
+            // 3. Draw Student Name
+            const name = DOM.nameInput.value.trim().toUpperCase();
+            if (name) {
+                ctx.fillStyle = '#0F3D2E';
+                ctx.font = 'bold 36px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                // Adjusting position slightly for better fit in the text area
+                ctx.fillText(name, canvas.width * 0.1, canvas.height * 0.58);
+            }
 
             state.canvas = canvas;
             DOM.canvasWrapper.innerHTML = '';
@@ -314,6 +331,7 @@
         // Actions
         document.getElementById('btn-back').onclick = () => updateStep(1);
         document.getElementById('btn-restart').onclick = () => {
+            DOM.nameInput.value = '';
             updateStep(1);
         };
         document.getElementById('btn-download').onclick = () => {
