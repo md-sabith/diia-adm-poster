@@ -203,13 +203,12 @@
         <p class="font-medium">Darul Irfan Islamic Academy Pandikkad</p>
     </footer>
 
-    <!-- Using the provided poster template -->
+    <!-- Template image -->
     <img id="poster-template" src="poster.jpg" alt="template" class="hidden" crossorigin="anonymous">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <script>
-        // State Management
         const state = {
             step: 1,
             cropper: null,
@@ -250,7 +249,6 @@
             });
         }
 
-        // File Selection
         DOM.dropZone.onclick = () => DOM.fileInput.click();
         DOM.fileInput.onchange = (e) => handleUpload(e.target.files[0]);
         DOM.dropZone.ondrop = (e) => { e.preventDefault(); handleUpload(e.dataTransfer.files[0]); };
@@ -278,7 +276,6 @@
             });
         }
 
-        // Updated Drawing logic based on specific requirements
         DOM.applyBtn.onclick = async () => {
             updateStep(3);
             DOM.loader.classList.remove('hidden');
@@ -297,12 +294,12 @@
             // 1. Draw Template
             ctx.drawImage(DOM.template, 0, 0);
 
-            // 2. Draw Portrait (Clipped Circle)
-            // Position: Horizontal center (0.5), Slightly above vertical center (0.36)
+            // 2. Draw Portrait (Increased radius to fill green space completely)
             ctx.save();
-            const centerX = canvas.width * 0.5;
-            const centerY = canvas.height * 0.36;
-            const radius = canvas.width * 0.20;
+            const centerX = canvas.width * 0.505; 
+            const centerY = canvas.height * 0.317; 
+            // Increased radius slightly to cover all green pixels
+            const radius = canvas.width * 0.203; 
             
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
@@ -311,30 +308,34 @@
             ctx.drawImage(cropped, centerX - radius, centerY - radius, radius * 2, radius * 2);
             ctx.restore();
 
-            // 3. Draw Student Name
-            // Ensure font is loaded
+            // 3. Draw Student Name (Aligned to top/center with rotation)
             await document.fonts.load("bold 40px 'Anek Malayalam'");
             
             const name = DOM.nameInput.value.trim().toUpperCase();
             if (name) {
-                const textX = canvas.width * 0.5;
-                const textY = canvas.height * 0.53;
-                const fontSize = canvas.width * 0.045;
-                const maxWidth = canvas.width * 0.6;
+                // Adjusting Y coordinate to push text higher (closer to rectangle top)
+                // Adjusting rotation (approx -2 degrees) to match the tilt of the blue rectangle
+                const textX = canvas.width * 0.495;
+                const textY = canvas.height * 0.510; // Shifted up from 0.514 to center better vertically
+                const fontSize = canvas.width * 0.040;
+                const maxWidth = canvas.width * 0.30; 
+                const rotation = -0.04; // Roughly -2.3 degrees in radians
 
                 ctx.save();
-                // Font & Style
-                ctx.fillStyle = '#000000'; // Black text color as per typical name fields
+                ctx.translate(textX, textY);
+                ctx.rotate(rotation);
+                
+                ctx.fillStyle = '#000000'; 
                 ctx.font = `bold ${fontSize}px 'Anek Malayalam'`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                // Subtle shadow
-                ctx.shadowColor = 'rgba(0,0,0,0.25)';
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetY = 2;
+                // Subtle shadow for better legibility against light blue
+                ctx.shadowColor = 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 2;
+                ctx.shadowOffsetY = 1;
 
-                ctx.fillText(name, textX, textY, maxWidth);
+                ctx.fillText(name, 0, 0, maxWidth);
                 ctx.restore();
             }
 
@@ -348,7 +349,6 @@
             }, 1200);
         };
 
-        // Actions
         document.getElementById('btn-back').onclick = () => updateStep(1);
         document.getElementById('btn-restart').onclick = () => {
             DOM.nameInput.value = '';
