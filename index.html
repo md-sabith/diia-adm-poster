@@ -298,7 +298,6 @@
             ctx.save();
             const centerX = canvas.width * 0.505; 
             const centerY = canvas.height * 0.317; 
-            // Increased radius slightly to cover all green pixels
             const radius = canvas.width * 0.203; 
             
             ctx.beginPath();
@@ -308,32 +307,31 @@
             ctx.drawImage(cropped, centerX - radius, centerY - radius, radius * 2, radius * 2);
             ctx.restore();
 
-            // 3. Draw Student Name (Aligned to top/center with rotation)
+            // 3. Draw Student Name (Updated with enhanced shadow rendering)
             await document.fonts.load("bold 40px 'Anek Malayalam'");
             
             const name = DOM.nameInput.value.trim().toUpperCase();
             if (name) {
-                // Adjusting Y coordinate to push text higher (closer to rectangle top)
-                // Adjusting rotation (approx -2 degrees) to match the tilt of the blue rectangle
                 const textX = canvas.width * 0.495;
-                const textY = canvas.height * 0.510; // Shifted up from 0.514 to center better vertically
+                const textY = canvas.height * 0.510;
                 const fontSize = canvas.width * 0.040;
                 const maxWidth = canvas.width * 0.30; 
-                const rotation = -0.07; // Roughly -2.3 degrees in radians
+                const rotation = -0.07; 
 
                 ctx.save();
                 ctx.translate(textX, textY);
                 ctx.rotate(rotation);
                 
+                // Enhanced professional shadow settings
+                ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 3;
+
                 ctx.fillStyle = '#000000'; 
                 ctx.font = `bold ${fontSize}px 'Anek Malayalam'`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-
-                // Subtle shadow for better legibility against light blue
-                ctx.shadowColor = 'rgba(0,0,0,0.15)';
-                ctx.shadowBlur = 2;
-                ctx.shadowOffsetY = 1;
 
                 ctx.fillText(name, 0, 0, maxWidth);
                 ctx.restore();
